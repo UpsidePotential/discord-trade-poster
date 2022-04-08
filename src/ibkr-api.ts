@@ -26,7 +26,14 @@ export const getAccounts = async (): Promise<Accounts[]> => {
 };
 
 export interface Positions {
-    accountId: string; 
+    acctId: string; 
+    contractDesc: string;
+    fullName: string;
+    ticker: string;
+    strike: string;
+    putOrCall: string;
+    position: number; //count
+    unrealizedPnl: number;
 }
 
 export const getPositions = async (accountId: string): Promise<Positions[]> => {

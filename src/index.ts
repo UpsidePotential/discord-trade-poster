@@ -1,12 +1,25 @@
 import { MessageEmbed, WebhookClient } from 'discord.js';
 import { getSession, ping, getAccounts, getPositions, Positions, comparePositions, getNewPositions } from './ibkr-api'
-
+const Multimap = require('multimap')
 
 require('dotenv').config();
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
 const webhookClient = new WebhookClient({ id: process.env.BOT_ID, token: process.env.TOKEN });
 let existingPositions: Positions[] = [];
+
+
+const groupPositons = (positions: Positions[]): any => {
+    const groupedPositions = new Multimap();
+
+    positions.forEach( value => {
+        groupedPositions.set(value.ticker, value);
+
+    });
+
+    return groupedPositions;
+}
+
 
 
 async function main() {
@@ -54,14 +67,40 @@ async function main() {
             existingPositions = positions;
             
             let promises: Promise<any>[] = [];
-            positions.forEach(position => {
+            // positions.forEach(position => {
+            //     const embed = new MessageEmbed()
+            //     .setColor('#0099ff')
+            //     .addField("Position", `${position.position.toString()} ${position.fullName}`)
+            //     .addFields(
+            //         { name: 'Cost', value: position.avgPrice.toString(), inline: true },
+            //         { name: 'PnL', value: position.unrealizedPnl.toString(), inline: true },
+            //     )
+            //     promises.push(webhookClient.send({
+            //         embeds: [embed],
+            //     }));
+            // });
+            const groupedPositions = groupPositons(positions);
+            groupedPositions.forEachEntry((elements: Positions[], key: string) => {
                 const embed = new MessageEmbed()
                 .setColor('#0099ff')
-                .addField("Position", `${position.position.toString()} ${position.fullName}`)
-                .addFields(
-                    { name: 'Cost', value: position.avgPrice.toString(), inline: true },
-                    { name: 'PnL', value: position.unrealizedPnl.toString(), inline: true },
-                )
+                .setTitle(key);
+
+                let upnl = 0;
+                elements.forEach( (value: Positions) => {
+                    upnl += value.unrealizedPnl;
+                });
+                embed.addField('Total UPnL', upnl.toFixed(2));
+   
+                elements.forEach( (value: Positions) => {
+                    if(value.position != 0 ) {
+                        embed.addField("Position", `${value.position.toString()} ${value.fullName.replace(key, '')}`)
+                        embed.addFields(
+                            { name: 'Cost', value: value.avgPrice.toFixed(2), inline: true },
+                            { name: 'PnL', value: value.unrealizedPnl.toFixed(2), inline: true },
+                        );
+                    }
+                });
+               
                 promises.push(webhookClient.send({
                     embeds: [embed],
                 }));
@@ -75,7 +114,7 @@ async function main() {
                 .setColor('#00ff1e')
                 .addField("New Position", `${position.position.toString()} ${position.fullName}`)
                 .addFields(
-                    { name: 'Cost', value: position.avgPrice.toString(), inline: true },
+                    { name: 'Cost', value: position.avgPrice.toFixed(2), inline: true },
                 )
                 promises.push(webhookClient.send({
                     embeds: [embed],

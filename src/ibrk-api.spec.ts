@@ -17,6 +17,7 @@ describe('ibrk', () => {
           strike: "asdf",
           unrealizedPnl: 0,
           conid: 1,
+          ticker: 'UVXY',
         }
       ];
 
@@ -32,6 +33,7 @@ describe('ibrk', () => {
           strike: "asdf",
           unrealizedPnl: 0,
           conid: 1,
+          ticker: 'UVXY',
         }
       ];
 
@@ -53,6 +55,7 @@ describe('ibrk', () => {
           strike: "asdf",
           unrealizedPnl: 0,
           conid: 2,
+          ticker: 'UVXY',
         }
       ];
 
@@ -80,6 +83,7 @@ describe('ibrk', () => {
           strike: "asdf",
           unrealizedPnl: 0,
           conid: 1,
+          ticker: 'UVXY',
         }
       ];
 
@@ -95,6 +99,7 @@ describe('ibrk', () => {
           strike: "asdf",
           unrealizedPnl: 0,
           conid: 1,
+          ticker: 'UVXY',
         }
       ];
 

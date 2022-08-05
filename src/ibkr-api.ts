@@ -1,5 +1,3 @@
-
-import e from 'express';
 import got from 'got';
 
 export const getSession = async (): Promise<string> => {
